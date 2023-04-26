@@ -18,8 +18,7 @@ dir_tree = {
 class FileMovementHandler(FileSystemEventHandler):
  
  def on_created(self, event):
-    print(event)
-    print(event.src_path)
+    print(f"{event.src_path} foi criado")
     name, extension = os.path.splitext(event.src_path)
     for key,value in dir_tree.items():
       if extension in value:
@@ -35,18 +34,69 @@ class FileMovementHandler(FileSystemEventHandler):
           print('movendo o arquivo')
           shutil.move(path1, path3)
 
-        event_handler = FileMovementHandler()
+ def on_deleted(self, event):
+    print(f"Opa! Alguém excluiu{event.src_path}!")
+    name, extension = os.path.splitext(event.src_path)
+    for key,value in dir_tree.items():
+      if extension in value:
+        file_name = os.path.basename(event.src_path)
+        path1 = origem+"/"+key
+        path2 = destino+"/"+key
+        path3 = destino+"/"+key+"/"+file_name
+        if(os.path.exists(path2)):
+          print('movendo o arquivo')
+          shutil.move(path1, path3)
+        else:
+          os.makedirs(path2)  
+          print('movendo o arquivo')
+          shutil.move(path1, path3)
 
-        observer = Observer()
+ def on_modified(self, event):
+    print(f"{event.src_path} foi modificado")
+    name, extension = os.path.splitext(event.src_path)
+    for key,value in dir_tree.items():
+      if extension in value:
+        file_name = os.path.basename(event.src_path)
+        path1 = origem+"/"+key
+        path2 = destino+"/"+key
+        path3 = destino+"/"+key+"/"+file_name
+        if(os.path.exists(path2)):
+          print('movendo o arquivo')
+          shutil.move(path1, path3)
+        else:
+          os.makedirs(path2)  
+          print('movendo o arquivo')
+          shutil.move(path1, path3)
 
-        observer.schedule(event_handler, origem, recursive=True)
+ def on_moved(self, event):
+    print(f"{event.src_path} foi movido")
+    name, extension = os.path.splitext(event.src_path)
+    for key,value in dir_tree.items():
+      if extension in value:
+        file_name = os.path.basename(event.src_path)
+        path1 = origem+"/"+key
+        path2 = destino+"/"+key
+        path3 = destino+"/"+key+"/"+file_name
+        if(os.path.exists(path2)):
+          print('movendo o arquivo')
+          shutil.move(path1, path3)
+        else:
+          os.makedirs(path2)  
+          print('movendo o arquivo')
+          shutil.move(path1, path3)
 
-        observer.start()  
+    event_handler = FileMovementHandler()
 
-        try:
-            while True:
+    observer = Observer()
+
+    observer.schedule(event_handler, origem, recursive=True)
+    
+    observer.start()  
+
+    try:
+      while True:
              time.sleep(2)
              print("executando...")
-        except KeyboardInterrupt:
+    except KeyboardInterrupt:
              print("Interrompido!")
              observer.stop()     
